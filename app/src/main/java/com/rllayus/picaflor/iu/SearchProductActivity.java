@@ -1,5 +1,8 @@
 package com.rllayus.picaflor.iu;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -14,9 +17,21 @@ import android.view.ViewGroup;
 
 import com.rllayus.picaflor.R;
 import com.rllayus.picaflor.iu.fragment.ProdutcFragment;
+import com.rllayus.picaflor.modelo.Empresa;
+import com.rllayus.picaflor.modelo.ProductItem;
 
 public class SearchProductActivity extends AppCompatActivity implements ProdutcFragment.OnFragmentInteractionListener{
+    private static final String EXTRA_NAME = "ProductName";
 
+    public static void createInstance(Activity activity, Empresa title) {
+        Intent intent = getLaunchIntent(activity, title);
+        activity.startActivity(intent);
+    }
+    public static Intent getLaunchIntent(Context context, Empresa product) {
+        Intent intent = new Intent(context, SearchProductActivity.class);
+        intent.putExtra(EXTRA_NAME, product.getNombre());
+        return intent;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
