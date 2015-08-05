@@ -32,4 +32,7 @@ public class DataService {
         mIDataRestService.getProducto(fecha, cb);
     }
 
+    public void getEmpresas(String nombreEmpresa,Callback<ObjetResponse<ProductItem>> cb){
+        
+    }
 }
