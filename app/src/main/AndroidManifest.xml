@@ -23,15 +23,28 @@
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize|stateHidden" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".iu.SearchProductActivity"
+            android:label="@string/title_activity_search_product" >
+        </activity>
+        <activity
+            android:name=".iu.DetailActivity"
+            android:label="@string/title_activity_detail"
+            android:parentActivityName=".iu.SearchProductActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.rllayus.picaflor.iu.SearchProductActivity" />
+        </activity>
     </application>
 
 </manifest>

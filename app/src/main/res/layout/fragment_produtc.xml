@@ -1,0 +1,13 @@
+<android.support.v7.widget.RecyclerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.rllayus.picaflor.iu.fragment.ProdutcFragment"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/reciclador"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_below="@+id/coordinator"
+    android:padding="3dp"
+    android:scrollbars="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior" >
+</android.support.v7.widget.RecyclerView>
