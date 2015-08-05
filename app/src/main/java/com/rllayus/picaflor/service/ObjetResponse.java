@@ -6,16 +6,16 @@ import java.util.List;
  * Created by CHUPITA on 17/06/2015.
  */
 public class ObjetResponse<T> {
-    private int status;
+    private int success;
     private String message;
     private List<T> values;
 
-    public int getStatus() {
-        return status;
+    public int getSuccess() {
+        return success;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setSuccess(int success) {
+        this.success = success;
     }
 
     public String getMessage() {

@@ -35,6 +35,6 @@ public class PicaflorPreference {
         return mPreferences.getInt(KEY_DISTANCE,10);
     }
     public String getRestServiceUrl(){
-        return "";
+        return "http://rolynet.net/gcs/aplicacion/index.php";
     }
 }

@@ -30,7 +30,6 @@
             android:layout_below="@+id/coordinator"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="com.rllayus.picaflor.iu.SearchProductActivity"
-            tools:ignore="MergeRootFrame" />
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </android.support.design.widget.CoordinatorLayout>
 </RelativeLayout>

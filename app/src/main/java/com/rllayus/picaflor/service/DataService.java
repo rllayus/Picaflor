@@ -2,6 +2,7 @@ package com.rllayus.picaflor.service;
 
 import android.content.Context;
 
+import com.rllayus.picaflor.modelo.Empresa;
 import com.rllayus.picaflor.modelo.ProductItem;
 
 import retrofit.Callback;
@@ -19,20 +20,10 @@ public class DataService {
 
     }
 
-
-
-    /**
-     * Este metodo es hibrido en el sentido de que realiza un consulta a la base de datos local y tambien
-     * al servidor en busca de actualizaciones.
-     * @param fecha
-     * @param cb
-     * @return un lista de los datos que esten almacenado en la base de datos
-     */
-    public void getCategories(String fecha, Callback<ObjetResponse<ProductItem>> cb){
-        mIDataRestService.getProducto(fecha, cb);
+    public DataService() {
+        mIDataRestService= RestServiceConnector.getDataRestService();
     }
-
-    public void getEmpresas(String nombreEmpresa,Callback<ObjetResponse<ProductItem>> cb){
-        
+    public void getEmpresas(String nombreEmpresa,Callback<ObjetResponse<Empresa>> cb){
+        mIDataRestService.buscarEmpresa(nombreEmpresa,cb);
     }
 }
