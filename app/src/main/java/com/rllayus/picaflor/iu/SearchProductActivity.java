@@ -19,28 +19,36 @@ import com.rllayus.picaflor.R;
 import com.rllayus.picaflor.iu.fragment.ProdutcFragment;
 import com.rllayus.picaflor.modelo.Empresa;
 import com.rllayus.picaflor.modelo.ProductItem;
+import com.rllayus.picaflor.utils.BundleKey;
 
 public class SearchProductActivity extends AppCompatActivity implements ProdutcFragment.OnFragmentInteractionListener{
     private static final String EXTRA_NAME = "ProductName";
-
+    private Empresa currentEmpresa;
+    private ProdutcFragment productFragment;
     public static void createInstance(Activity activity, Empresa title) {
         Intent intent = getLaunchIntent(activity, title);
         activity.startActivity(intent);
     }
-    public static Intent getLaunchIntent(Context context, Empresa product) {
+    public static Intent getLaunchIntent(Context context, Empresa empresa) {
         Intent intent = new Intent(context, SearchProductActivity.class);
-        intent.putExtra(EXTRA_NAME, product.getNombre());
+        intent.putExtra(EXTRA_NAME, empresa.getNombre());
+        intent.putExtra(BundleKey.KEY_EMPRESA_CURRENT,empresa);
         return intent;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_product);
+        if(getIntent().getExtras()!=null){
+            currentEmpresa=(Empresa)getIntent().getExtras().getSerializable(BundleKey.KEY_EMPRESA_CURRENT);
+        }
         setUpToolbar();
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new ProdutcFragment())
+            productFragment=ProdutcFragment.newInstance(currentEmpresa);
+            getSupportFragmentManager().beginTransaction().replace(R.id.container,productFragment,"Fragment" )
                     .commit();
-        }
+        }else
+        productFragment=(ProdutcFragment)getSupportFragmentManager().findFragmentByTag("Fragment");
     }
 
     /**
@@ -51,28 +59,6 @@ public class SearchProductActivity extends AppCompatActivity implements ProdutcF
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_search_product, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
     private void setUpToolbar() {
         // Añadir la Toolbar
@@ -85,19 +71,4 @@ public class SearchProductActivity extends AppCompatActivity implements ProdutcF
 
     }
 
-    /**
-         * A placeholder fragment containing a simple view.
-         */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_search_product, container, false);
-            return rootView;
-        }
-    }
 }

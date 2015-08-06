@@ -29,4 +29,7 @@ public class DataService {
     public void listarProducto(Callback<ObjetResponse<ProductItem>> cb){
         mIDataRestService.listarProducto(cb);
     }
+    public void buscarProducto(int idEmpresa,String buscar,Callback<ObjetResponse<ProductItem>> cb){
+        mIDataRestService.buscarProducto(idEmpresa,buscar,cb);
+    }
 }
