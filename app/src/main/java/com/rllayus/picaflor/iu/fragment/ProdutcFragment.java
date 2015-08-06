@@ -174,19 +174,7 @@ public class ProdutcFragment extends android.support.v4.app.Fragment implements 
         Log.i(getTag(),"savedInstanceState");
         super.onSaveInstanceState(outState);
     }
-    public List<ProductItem> cargarProductos(){
-        List<ProductItem> auxList=new ArrayList<>();
-        ProductItem producto;
-        for (int i=0;i<100;i++){
-            producto=new ProductItem();
-            producto.setNombre("Coca cola ");
-            producto.setBarcode("32423432423423423423");
-            producto.setUrilogo( "http://jhjhj/jkhjh/jkhjk");
-            producto.setDescripcion("caskjasdas;dkasdasjdasjhasdas;dalsd asdkasld asd asdasdl;asdkasl;dkasld asdjashdasdasndlasdklasjdasdasd,a'dasdkasdnasdnjashduadhwqro[weriwerwekrlnwefkcnslkcnskd");
-            auxList.add(producto);
-        }
-        return auxList;
-    }
+    
     public void listarProducto(){
         progressDialog.setTitle("Espere ...");
         progressDialog.setIndeterminate(true);
