@@ -11,8 +11,8 @@ public interface IDataRestService {
 
     @GET("/test")
     public String test();
-    @FormUrlEncoded
-    @POST("/empresa/listar")
+
+    @GET("/empresa/listar")
     public void listarEmpresa(Callback<ObjetResponse<Empresa>> cb);
     @FormUrlEncoded
     @POST("/empresa/buscarEmpresas")
