@@ -14,7 +14,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.rllayus.picaflor.R;
 import com.rllayus.picaflor.iu.adapter.EmpresaAdapter;
@@ -29,6 +28,7 @@ import java.util.List;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+
 
 public class SearchEmpresaActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
     private RecyclerView recycler;
@@ -82,24 +82,29 @@ public class SearchEmpresaActivity extends AppCompatActivity implements SearchVi
         }
         return super.onOptionsItemSelected(item);
     }
-    private void loadEmpresa(String textToSearch){
+
+    /*
+     * By RolyNet
+     */
+    private void buscarEmpresa(String textToSearch){
         this.textToSearch=textToSearch;
         progressDialog.setTitle("Espere ...");
         progressDialog.setIndeterminate(true);
         progressDialog.show();
-        mDataService.getEmpresas(textToSearch,new Callback<ObjetResponse<Empresa>>() {
+        mDataService.buscarEmpresas(textToSearch, new Callback<ObjetResponse<Empresa>>() {
             @Override
             public void success(ObjetResponse<Empresa> empresaObjetResponse, Response response) {
-                items=empresaObjetResponse.getValues();
+                items = empresaObjetResponse.getValues();
                 empresaAdapter.setItems(items);
                 empresaAdapter.notifyDataSetChanged();
                 searchView.clearFocus();
                 progressDialog.dismiss();
             }
+
             @Override
             public void failure(RetrofitError error) {
                 progressDialog.dismiss();
-                Snackbar.make(recycler,"Error al ejecutar la consulta",Snackbar.LENGTH_LONG).show();
+                Snackbar.make(recycler, "Error al ejecutar la consulta", Snackbar.LENGTH_LONG).show();
             }
         });
 
@@ -127,9 +132,12 @@ public class SearchEmpresaActivity extends AppCompatActivity implements SearchVi
         });
     }
 
+    /**
+     * By RolyNet
+     */
     @Override
     public boolean onQueryTextSubmit(String query) {
-        loadEmpresa(query);
+        buscarEmpresa(query);
         return true;
     }
 

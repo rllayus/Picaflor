@@ -23,7 +23,7 @@ public class DataService {
     public DataService() {
         mIDataRestService= RestServiceConnector.getDataRestService();
     }
-    public void getEmpresas(String nombreEmpresa,Callback<ObjetResponse<Empresa>> cb){
+    public void buscarEmpresas(String nombreEmpresa, Callback<ObjetResponse<Empresa>> cb){
         mIDataRestService.buscarEmpresa(nombreEmpresa,cb);
     }
     public void listarProducto(Callback<ObjetResponse<ProductItem>> cb){
