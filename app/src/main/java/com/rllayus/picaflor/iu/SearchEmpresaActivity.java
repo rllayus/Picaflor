@@ -60,6 +60,7 @@ public class SearchEmpresaActivity extends AppCompatActivity implements SearchVi
         setSupportActionBar(toolbar);
 
         mDataService=new DataService(this);
+        listarEmpresa();
     }
 
     @Override
@@ -102,6 +103,28 @@ public class SearchEmpresaActivity extends AppCompatActivity implements SearchVi
             }
         });
 
+    }
+
+    private void listarEmpresa(){
+        progressDialog.setTitle("Espere ...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+        mDataService.listarEmpresa(new Callback<ObjetResponse<Empresa>>() {
+            @Override
+            public void success(ObjetResponse<Empresa> empresaObjetResponse, Response response) {
+                items=empresaObjetResponse.getValues();
+                empresaAdapter.setItems(items);
+                empresaAdapter.notifyDataSetChanged();
+                searchView.clearFocus();
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                progressDialog.dismiss();
+                Snackbar.make(recycler,"Error al ejecutar la consulta",Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
