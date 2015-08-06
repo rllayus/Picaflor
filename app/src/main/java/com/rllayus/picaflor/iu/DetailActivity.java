@@ -3,42 +3,66 @@ package com.rllayus.picaflor.iu;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.rllayus.picaflor.R;
 import com.rllayus.picaflor.modelo.ProductItem;
+import com.rllayus.picaflor.utils.BundleKey;
+import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
     private static final String EXTRA_NAME = "ProductName";
-
+    private Toolbar toolBar;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
+    private TextView nombre,descripcion,precio;
+    private ImageView logo;
+    private ProductItem producto;
     public static void createInstance(Activity activity, ProductItem title) {
         Intent intent = getLaunchIntent(activity, title);
         activity.startActivity(intent);
     }
     public static Intent getLaunchIntent(Context context, ProductItem product) {
         Intent intent = new Intent(context, DetailActivity.class);
-        intent.putExtra(EXTRA_NAME, product.getName());
+        intent.putExtra(EXTRA_NAME, product.getNombre());
+        intent.putExtra(BundleKey.KEY_PRODUCTO_CURRENT,product);
         return intent;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
+        Bundle bundle=getIntent().getExtras();
+        if(bundle!=null){
+           producto=(ProductItem)bundle.getSerializable(BundleKey.KEY_PRODUCTO_CURRENT);
         }
+        toolBar=(Toolbar)findViewById(R.id.tb_deatil_toolbar);
+        setSupportActionBar(toolBar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        collapsingToolbarLayout=(CollapsingToolbarLayout)findViewById(R.id.collapser);
+        collapsingToolbarLayout.setTitle(producto.getNombre());
+        logo=(ImageView)findViewById(R.id.iv_image_paralax);
+        Picasso.with(this).load(producto.getUrilogo()).into(logo);
+        descripcion=(TextView)findViewById(R.id.tv_descripcion_producto);
+        descripcion.setText(producto.getDescripcion());
+        precio=(TextView)findViewById(R.id.tv_precio_producto);
+        precio=(TextView)findViewById(R.id.tv_precio_producto);
+        precio.setText(producto.getPrecio()+"$");
+
+
     }
 
 

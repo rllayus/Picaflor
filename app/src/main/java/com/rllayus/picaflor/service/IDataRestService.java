@@ -15,6 +15,6 @@ public interface IDataRestService {
     @POST("/empresa/buscarEmpresas")
 	public void buscarEmpresa(@Field("buscar") String buscar,Callback<ObjetResponse<Empresa>> cb);
     @FormUrlEncoded
-    @POST("/producto/listarProductos")
-    public void listarProducto(Callback<ObjetResponse<Empresa>> cb);
+    @POST("/producto/listar")
+    public void listarProducto(Callback<ObjetResponse<ProductItem>> cb);
 }

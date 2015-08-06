@@ -1,20 +1,32 @@
 package com.rllayus.picaflor.iu.fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.rllayus.picaflor.R;
 import com.rllayus.picaflor.iu.adapter.ProductAdapter;
+import com.rllayus.picaflor.modelo.Empresa;
 import com.rllayus.picaflor.modelo.ProductItem;
+import com.rllayus.picaflor.service.DataService;
+import com.rllayus.picaflor.service.ObjetResponse;
+import com.rllayus.picaflor.utils.BundleKey;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +48,11 @@ public class ProdutcFragment extends android.support.v4.app.Fragment {
     private RecyclerView recyclerView;
     private ProductAdapter productAdapter;
     private OnFragmentInteractionListener mListener;
+    private SearchView searchView;
+    private ProgressDialog progressDialog;
+    private String textToSearch;
+    private DataService mDataService;
+    private List<ProductItem> items;
 
     /**
      * Use this factory method to create a new instance of
@@ -67,31 +84,29 @@ public class ProdutcFragment extends android.support.v4.app.Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-    public ArrayList<ProductItem> getItems(){
-        ProductItem productItem;
-        ArrayList<ProductItem> lista=new ArrayList<>();
-        for (int i=0;i<50;i++){
-            productItem=new ProductItem();
-            productItem.setId(i);
-            productItem.setName("Producto "+i);
-            productItem.setDescription("hasdadandkadpadasndalkdnakpdnadkasdnasdlkanskdnaskdas;dmakdmkadasdasbdauosdasdkadaksdjad");
-            productItem.setPrice(50);
-            productItem.setImage("http://1drv.ms/1hhZkD4");
-            lista.add(productItem);
-        }
-        return lista;
-    }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =inflater.inflate(R.layout.fragment_produtc, container, false);
+        if(savedInstanceState!=null){
+            items=(ArrayList)savedInstanceState.getSerializable(BundleKey.KEY_LIST_EMPRESA);
+            textToSearch=(String)savedInstanceState.getString(BundleKey.KEY_TEXT_TO_SEARCH);
+        }else{
+            items=new ArrayList<>();
+            textToSearch="";
+        }
+        progressDialog=new ProgressDialog(getActivity());
+        mDataService=new DataService();
         recyclerView=(RecyclerView)view.findViewById(R.id.reciclador);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        productAdapter=new ProductAdapter(getItems(),getActivity());
+        productAdapter=new ProductAdapter(cargarProductos(),getActivity());
         recyclerView.setAdapter(productAdapter);
         recyclerView.setHasFixedSize(true);
+        loadProducto();
         return  view;
     }
 
@@ -119,16 +134,45 @@ public class ProdutcFragment extends android.support.v4.app.Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(BundleKey.KEY_LIST_PRODUCTO,(ArrayList)items);
+        outState.putString(BundleKey.KEY_TEXT_TO_SEARCH, textToSearch);
+        super.onSaveInstanceState(outState);
+    }
+    public List<ProductItem> cargarProductos(){
+        List<ProductItem> auxList=new ArrayList<>();
+        ProductItem producto;
+        for (int i=0;i<100;i++){
+            producto=new ProductItem();
+            producto.setNombre("Coca cola ");
+            producto.setBarcode("32423432423423423423");
+            producto.setUrilogo( "http://jhjhj/jkhjh/jkhjk");
+            producto.setDescripcion("caskjasdas;dkasdasjdasjhasdas;dalsd asdkasld asd asdasdl;asdkasl;dkasld asdjashdasdasndlasdklasjdasdasd,a'dasdkasdnasdnjashduadhwqro[weriwerwekrlnwefkcnslkcnskd");
+            auxList.add(producto);
+        }
+        return auxList;
+    }
+    public void loadProducto(){
+        progressDialog.setTitle("Espere ...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+        mDataService.listarProducto(new Callback<ObjetResponse<ProductItem>>() {
+            @Override
+            public void success(ObjetResponse<ProductItem> productItemObjetResponse, Response response) {
+                items=productItemObjetResponse.getValues();
+                productAdapter.setItems(items);
+                productAdapter.notifyDataSetChanged();
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                progressDialog.dismiss();
+                Snackbar.make(recyclerView, "Error al ejecutar la consulta", Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);

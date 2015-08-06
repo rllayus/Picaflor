@@ -43,6 +43,15 @@ public class SearchProductActivity extends AppCompatActivity implements ProdutcF
         }
     }
 
+    /**
+     * Save all appropriate fragment state.
+     *
+     * @param outState
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
