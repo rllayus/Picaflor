@@ -115,6 +115,7 @@ public class ProdutcFragment extends android.support.v4.app.Fragment implements 
         productAdapter=new ProductAdapter(items,getActivity());
         recyclerView.setAdapter(productAdapter);
         recyclerView.setHasFixedSize(true);
+        listarProducto();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -186,11 +187,11 @@ public class ProdutcFragment extends android.support.v4.app.Fragment implements 
         }
         return auxList;
     }
-    public void loadProducto(){
+    public void listarProducto(){
         progressDialog.setTitle("Espere ...");
         progressDialog.setIndeterminate(true);
         progressDialog.show();
-        mDataService.listarProducto(new Callback<ObjetResponse<ProductItem>>() {
+        mDataService.listarProducto(currentEmpresa.getId(),new Callback<ObjetResponse<ProductItem>>() {
             @Override
             public void success(ObjetResponse<ProductItem> productItemObjetResponse, Response response) {
                 items=productItemObjetResponse.getValues();
