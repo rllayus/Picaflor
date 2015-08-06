@@ -1,20 +1,38 @@
 package com.rllayus.picaflor.iu.fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.rllayus.picaflor.R;
 import com.rllayus.picaflor.iu.adapter.ProductAdapter;
+import com.rllayus.picaflor.modelo.Empresa;
 import com.rllayus.picaflor.modelo.ProductItem;
+import com.rllayus.picaflor.service.DataService;
+import com.rllayus.picaflor.service.ObjetResponse;
+import com.rllayus.picaflor.utils.BundleKey;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,7 +42,9 @@ import java.util.ArrayList;
  * Use the {@link ProdutcFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProdutcFragment extends android.support.v4.app.Fragment {
+public class ProdutcFragment extends android.support.v4.app.Fragment implements SearchView.OnQueryTextListener{
+
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -36,21 +56,19 @@ public class ProdutcFragment extends android.support.v4.app.Fragment {
     private RecyclerView recyclerView;
     private ProductAdapter productAdapter;
     private OnFragmentInteractionListener mListener;
+    private SearchView searchView;
+    private ProgressDialog progressDialog;
+    private String textToSearch;
+    private DataService mDataService;
+    private List<ProductItem> items;
+    private Empresa currentEmpresa;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ProdutcFragment.
-     */
+
     // TODO: Rename and change types and number of parameters
-    public static ProdutcFragment newInstance(String param1, String param2) {
+    public static ProdutcFragment newInstance(Empresa empresa) {
         ProdutcFragment fragment = new ProdutcFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable(ARG_PARAM1, empresa);
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,36 +81,40 @@ public class ProdutcFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            currentEmpresa =(Empresa) getArguments().getSerializable(ARG_PARAM1);
         }
-    }
-    public ArrayList<ProductItem> getItems(){
-        ProductItem productItem;
-        ArrayList<ProductItem> lista=new ArrayList<>();
-        for (int i=0;i<50;i++){
-            productItem=new ProductItem();
-            productItem.setId(i);
-            productItem.setName("Producto "+i);
-            productItem.setDescription("hasdadandkadpadasndalkdnakpdnadkasdnasdlkanskdnaskdas;dmakdmkadasdasbdauosdasdkadaksdjad");
-            productItem.setPrice(50);
-            productItem.setImage("http://1drv.ms/1hhZkD4");
-            lista.add(productItem);
-        }
-        return lista;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        if(getArguments()!=null){
+            currentEmpresa=(Empresa)getArguments().getSerializable(ARG_PARAM1);
+        }
         View view =inflater.inflate(R.layout.fragment_produtc, container, false);
+        progressDialog=new ProgressDialog(getActivity());
+        mDataService=new DataService();
         recyclerView=(RecyclerView)view.findViewById(R.id.reciclador);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        productAdapter=new ProductAdapter(getItems(),getActivity());
+        setHasOptionsMenu(true);
+        return  view;
+    }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState!=null){
+            Log.i(getTag(),"savedInstanceState not null");
+            items=(ArrayList)savedInstanceState.getSerializable(BundleKey.KEY_LIST_EMPRESA);
+            textToSearch=(String)savedInstanceState.getString(BundleKey.KEY_TEXT_TO_SEARCH);
+            currentEmpresa=(Empresa)savedInstanceState.getSerializable(BundleKey.KEY_EMPRESA_CURRENT);
+        }else{
+            items=new ArrayList<>();
+            textToSearch="";
+        }
+        productAdapter=new ProductAdapter(items,getActivity());
         recyclerView.setAdapter(productAdapter);
         recyclerView.setHasFixedSize(true);
-        return  view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -101,6 +123,30 @@ public class ProdutcFragment extends android.support.v4.app.Fragment {
             mListener.onFragmentInteraction(uri);
         }
     }
+
+    /**
+     * Initialize the contents of the Activity's standard options menu.  You
+     * should place your menu items in to <var>menu</var>.  For this method
+     * to be called, you must have first called {@link #setHasOptionsMenu}.  See
+     * {@link android.app.Activity#onCreateOptionsMenu(android.view.Menu) Activity.onCreateOptionsMenu}
+     * for more information.
+     *
+     * @param menu     The options menu in which you place your items.
+     * @param inflater
+     * @see #setHasOptionsMenu
+     * @see #onPrepareOptionsMenu
+     * @see #onOptionsItemSelected
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_search_product,menu);
+        MenuItem searchItem=menu.findItem(R.id.action_search);
+        searchView=(SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setQueryHint(getResources().getString(R.string.action_search_label));
+        searchView.setOnQueryTextListener(this);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -119,16 +165,99 @@ public class ProdutcFragment extends android.support.v4.app.Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(BundleKey.KEY_LIST_PRODUCTO,(ArrayList)items);
+        outState.putString(BundleKey.KEY_TEXT_TO_SEARCH, textToSearch);
+        outState.putSerializable(BundleKey.KEY_EMPRESA_CURRENT,currentEmpresa);
+        Log.i(getTag(),"savedInstanceState");
+        super.onSaveInstanceState(outState);
+    }
+    public List<ProductItem> cargarProductos(){
+        List<ProductItem> auxList=new ArrayList<>();
+        ProductItem producto;
+        for (int i=0;i<100;i++){
+            producto=new ProductItem();
+            producto.setNombre("Coca cola ");
+            producto.setBarcode("32423432423423423423");
+            producto.setUrilogo( "http://jhjhj/jkhjh/jkhjk");
+            producto.setDescripcion("caskjasdas;dkasdasjdasjhasdas;dalsd asdkasld asd asdasdl;asdkasl;dkasld asdjashdasdasndlasdklasjdasdasd,a'dasdkasdnasdnjashduadhwqro[weriwerwekrlnwefkcnslkcnskd");
+            auxList.add(producto);
+        }
+        return auxList;
+    }
+    public void loadProducto(){
+        progressDialog.setTitle("Espere ...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+        mDataService.listarProducto(new Callback<ObjetResponse<ProductItem>>() {
+            @Override
+            public void success(ObjetResponse<ProductItem> productItemObjetResponse, Response response) {
+                items=productItemObjetResponse.getValues();
+                productAdapter.setItems(items);
+                productAdapter.notifyDataSetChanged();
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                progressDialog.dismiss();
+                Snackbar.make(recyclerView, "Error al ejecutar la consulta", Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+    public void buscarProducto(String buscar){
+        this.textToSearch=buscar;
+        progressDialog.setTitle("Espere ...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+        System.out.println("idEmpresa: "+currentEmpresa.getId());
+        mDataService.buscarProducto(currentEmpresa.getId(),buscar,new Callback<ObjetResponse<ProductItem>>() {
+            @Override
+            public void success(ObjetResponse<ProductItem> productItemObjetResponse, Response response) {
+                items=productItemObjetResponse.getValues();
+                productAdapter.setItems(items);
+                productAdapter.notifyDataSetChanged();
+                progressDialog.dismiss();
+                searchView.clearFocus();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                progressDialog.dismiss();
+                Snackbar.make(recyclerView, "Error al ejecutar la consulta", Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * Called when the user submits the query. This could be due to a key press on the
+     * keyboard or due to pressing a submit button.
+     * The listener can override the standard behavior by returning true
+     * to indicate that it has handled the submit request. Otherwise return false to
+     * let the SearchView handle the submission by launching any associated intent.
+     *
+     * @param query the query text that is to be submitted
+     * @return true if the query has been handled by the listener, false to let the
+     * SearchView perform the default action.
      */
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        buscarProducto(query);
+        return true;
+    }
+
+    /**
+     * Called when the query text is changed by the user.
+     *
+     * @param newText the new content of the query text field.
+     * @return false if the SearchView should perform the default action of showing any
+     * suggestions if available, true if the action was handled by the listener.
+     */
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);

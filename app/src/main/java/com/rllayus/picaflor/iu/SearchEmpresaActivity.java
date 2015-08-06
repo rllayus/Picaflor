@@ -38,7 +38,6 @@ public class SearchEmpresaActivity extends AppCompatActivity implements SearchVi
     private List<Empresa> items;
     private SearchView searchView;
     private ProgressDialog progressDialog;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private String textToSearch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
