@@ -88,7 +88,7 @@ public class ProdutcFragment extends android.support.v4.app.Fragment implements 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        Log.i(getTag(),"onCreateView");
         if(getArguments()!=null){
             currentEmpresa=(Empresa)getArguments().getSerializable(ARG_PARAM1);
         }
@@ -103,19 +103,22 @@ public class ProdutcFragment extends android.support.v4.app.Fragment implements 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.i(getTag(),"onActivityCreated");
         if(savedInstanceState!=null){
             Log.i(getTag(),"savedInstanceState not null");
-            items=(ArrayList)savedInstanceState.getSerializable(BundleKey.KEY_LIST_EMPRESA);
+            items=(ArrayList)savedInstanceState.getSerializable(BundleKey.KEY_LIST_PRODUCTO);
             textToSearch=(String)savedInstanceState.getString(BundleKey.KEY_TEXT_TO_SEARCH);
             currentEmpresa=(Empresa)savedInstanceState.getSerializable(BundleKey.KEY_EMPRESA_CURRENT);
+            productAdapter=new ProductAdapter(items,getActivity());
         }else{
             items=new ArrayList<>();
             textToSearch="";
+            productAdapter=new ProductAdapter(items,getActivity());
+            listarProducto();
         }
-        productAdapter=new ProductAdapter(items,getActivity());
         recyclerView.setAdapter(productAdapter);
-        recyclerView.setHasFixedSize(true);
-        listarProducto();
+        recyclerView.setHasFixedSize(false);
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -125,19 +128,6 @@ public class ProdutcFragment extends android.support.v4.app.Fragment implements 
         }
     }
 
-    /**
-     * Initialize the contents of the Activity's standard options menu.  You
-     * should place your menu items in to <var>menu</var>.  For this method
-     * to be called, you must have first called {@link #setHasOptionsMenu}.  See
-     * {@link android.app.Activity#onCreateOptionsMenu(android.view.Menu) Activity.onCreateOptionsMenu}
-     * for more information.
-     *
-     * @param menu     The options menu in which you place your items.
-     * @param inflater
-     * @see #setHasOptionsMenu
-     * @see #onPrepareOptionsMenu
-     * @see #onOptionsItemSelected
-     */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_search_product,menu);
@@ -168,11 +158,11 @@ public class ProdutcFragment extends android.support.v4.app.Fragment implements 
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         outState.putSerializable(BundleKey.KEY_LIST_PRODUCTO,(ArrayList)items);
         outState.putString(BundleKey.KEY_TEXT_TO_SEARCH, textToSearch);
         outState.putSerializable(BundleKey.KEY_EMPRESA_CURRENT,currentEmpresa);
         Log.i(getTag(),"savedInstanceState");
-        super.onSaveInstanceState(outState);
     }
     
     public void listarProducto(){

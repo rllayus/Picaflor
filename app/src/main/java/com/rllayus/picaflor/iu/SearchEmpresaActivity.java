@@ -43,24 +43,25 @@ public class SearchEmpresaActivity extends AppCompatActivity implements SearchVi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_empresa);
-        if(savedInstanceState!=null){
-            items=(ArrayList)savedInstanceState.getSerializable(BundleKey.KEY_LIST_EMPRESA);
-            textToSearch=(String)savedInstanceState.getString(BundleKey.KEY_TEXT_TO_SEARCH);
-        }else{
-            items=new ArrayList<>();
-            textToSearch="";
-        }
+        mDataService=new DataService(this);
         progressDialog=new ProgressDialog(this);
-        empresaAdapter=new EmpresaAdapter(items,this);
         recycler=(RecyclerView)findViewById(R.id.reciclador_emp);
         toolbar=(Toolbar)findViewById(R.id.toolbar_emp);
         recycler.setHasFixedSize(false);
         recycler.setLayoutManager(new LinearLayoutManager(this));
-        recycler.setAdapter(empresaAdapter);
         setSupportActionBar(toolbar);
+        if(savedInstanceState!=null){
+            items=(ArrayList)savedInstanceState.getSerializable(BundleKey.KEY_LIST_EMPRESA);
+            textToSearch=(String)savedInstanceState.getString(BundleKey.KEY_TEXT_TO_SEARCH);
+            empresaAdapter=new EmpresaAdapter(items,this);
+        }else{
+            items=new ArrayList<>();
+            textToSearch="";
+            empresaAdapter=new EmpresaAdapter(items,this);
+            listarEmpresa();
+        }
+        recycler.setAdapter(empresaAdapter);
 
-        mDataService=new DataService(this);
-        listarEmpresa();
     }
 
     @Override

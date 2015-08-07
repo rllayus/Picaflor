@@ -39,16 +39,20 @@ public class SearchProductActivity extends AppCompatActivity implements ProdutcF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_product);
-        if(getIntent().getExtras()!=null){
-            currentEmpresa=(Empresa)getIntent().getExtras().getSerializable(BundleKey.KEY_EMPRESA_CURRENT);
-        }
         setUpToolbar();
         if (savedInstanceState == null) {
-            productFragment=ProdutcFragment.newInstance(currentEmpresa);
-            getSupportFragmentManager().beginTransaction().replace(R.id.container,productFragment,"Fragment" )
-                    .commit();
-        }else
-        productFragment=(ProdutcFragment)getSupportFragmentManager().findFragmentByTag("Fragment");
+            if(getIntent().getExtras()!=null) {
+                currentEmpresa = (Empresa) getIntent().getExtras().getSerializable(BundleKey.KEY_EMPRESA_CURRENT);
+                productFragment = ProdutcFragment.newInstance(currentEmpresa);
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, productFragment, "Fragment")
+                        .commit();
+                setTitle(currentEmpresa.getNombre());
+            }
+        }else {
+            productFragment = (ProdutcFragment) getSupportFragmentManager().findFragmentByTag("Fragment");
+            currentEmpresa=(Empresa)savedInstanceState.getSerializable(BundleKey.KEY_EMPRESA_CURRENT);
+            setTitle(currentEmpresa.getNombre());
+        }
     }
 
     /**
@@ -59,11 +63,19 @@ public class SearchProductActivity extends AppCompatActivity implements ProdutcF
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putSerializable(BundleKey.KEY_EMPRESA_CURRENT,currentEmpresa);
     }
     private void setUpToolbar() {
         // Añadir la Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     @Override

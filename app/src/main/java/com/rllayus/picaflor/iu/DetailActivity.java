@@ -52,6 +52,12 @@ public class DetailActivity extends AppCompatActivity {
         toolBar=(Toolbar)findViewById(R.id.tb_deatil_toolbar);
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         collapsingToolbarLayout=(CollapsingToolbarLayout)findViewById(R.id.collapser);
         collapsingToolbarLayout.setTitle(producto.getNombre());
         logo=(ImageView)findViewById(R.id.iv_image_paralax);
@@ -61,8 +67,6 @@ public class DetailActivity extends AppCompatActivity {
         precio=(TextView)findViewById(R.id.tv_precio_producto);
         precio=(TextView)findViewById(R.id.tv_precio_producto);
         precio.setText(producto.getPrecio()+"$");
-
-
     }
 
 
