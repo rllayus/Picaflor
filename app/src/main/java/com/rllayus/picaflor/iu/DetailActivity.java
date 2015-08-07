@@ -49,7 +49,7 @@ public class DetailActivity extends AppCompatActivity {
         if(bundle!=null){
            producto=(ProductItem)bundle.getSerializable(BundleKey.KEY_PRODUCTO_CURRENT);
         }
-        toolBar=(Toolbar)findViewById(R.id.tb_deatil_toolbar);
+        toolBar=(Toolbar)findViewById(R.id.toolbar_emp);
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -58,8 +58,6 @@ public class DetailActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        collapsingToolbarLayout=(CollapsingToolbarLayout)findViewById(R.id.collapser);
-        collapsingToolbarLayout.setTitle(producto.getNombre());
         logo=(ImageView)findViewById(R.id.iv_image_paralax);
         Picasso.with(this).load(producto.getUrilogo()).into(logo);
         descripcion=(TextView)findViewById(R.id.tv_descripcion_producto);
