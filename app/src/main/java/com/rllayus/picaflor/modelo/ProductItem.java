@@ -11,7 +11,7 @@ public class ProductItem implements Serializable {
     private String descripcion;
     private String urilogo;
     private String barcode;
-    private int precio;
+    private float precio;
     private int estado;
 
     public ProductItem() {
@@ -25,11 +25,11 @@ public class ProductItem implements Serializable {
         this.estado = estado;
     }
 
-    public Integer getPrecio() {
+    public Float getPrecio() {
         return precio;
     }
 
-    public void setPrecio(Integer precio) {
+    public void setPrecio(float precio) {
         this.precio = precio;
     }
 

@@ -58,6 +58,8 @@ public class DetailActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+        getSupportActionBar().setTitle(producto.getNombre());
+        setTitle(producto.getNombre());
         logo=(ImageView)findViewById(R.id.iv_image_paralax);
         Picasso.with(this).load(producto.getUrilogo()).into(logo);
         descripcion=(TextView)findViewById(R.id.tv_descripcion_producto);
@@ -66,8 +68,6 @@ public class DetailActivity extends AppCompatActivity {
         precio=(TextView)findViewById(R.id.tv_precio_producto);
         precio.setText(producto.getPrecio()+"$");
     }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

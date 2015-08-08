@@ -169,6 +169,7 @@ public class ProdutcFragment extends android.support.v4.app.Fragment implements 
         progressDialog.setTitle("Espere ...");
         progressDialog.setIndeterminate(true);
         progressDialog.show();
+        Log.i(getTag(),"idEmpresa"+currentEmpresa.getId());
         mDataService.listarProducto(currentEmpresa.getId(),new Callback<ObjetResponse<ProductItem>>() {
             @Override
             public void success(ObjetResponse<ProductItem> productItemObjetResponse, Response response) {
@@ -181,6 +182,7 @@ public class ProdutcFragment extends android.support.v4.app.Fragment implements 
             @Override
             public void failure(RetrofitError error) {
                 progressDialog.dismiss();
+                error.printStackTrace();
                 Snackbar.make(recyclerView, "Error al ejecutar la consulta", Snackbar.LENGTH_LONG).show();
             }
         });
